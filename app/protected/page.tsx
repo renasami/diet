@@ -1,13 +1,19 @@
-import { createClient } from "@/lib/supabase/supabaseServerClient";
+"use client";
 import { redirect } from "next/navigation";
+import { SupabaseProvider, useSupabase } from "../auth-context";
 
-export default async function ProtectedPage() {
-  const supabase = createClient();
+const ProtectedPage = () => {
+  // const supabase = useSupabase();
 
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    redirect("/login");
-  }
+  // if (!supabase.user) {
+  //   redirect("/login");
+  // }
 
-  return <p>Hello {data.user.email}</p>;
-}
+  return (
+    <div>
+      <h1>ホームページ</h1>
+    </div>
+  );
+};
+
+export default ProtectedPage;

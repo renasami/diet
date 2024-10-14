@@ -1,36 +1,41 @@
 // app/auth-context.tsx
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/supabaseServerClient";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/supabaseClient";
 
 interface SupabaseContext {
-  data:
-    | {
-        user: User;
-      }
-    | {
-        user: null;
-      };
+  user: User | null;
 }
 
 const Context = createContext<SupabaseContext | undefined>(undefined);
 
-export const SupabaseProvider = async ({
+export const SupabaseProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    redirect("/login");
-  }
+  console.log(user);
 
-  return <Context.Provider value={{ data }}>{children}</Context.Provider>;
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data?.user) {
+        router.push("/login");
+      } else {
+        setUser(data.user);
+      }
+    };
+
+    getUser();
+  }, [router]);
+
+  return <Context.Provider value={{ user }}>{children}</Context.Provider>;
 };
 
 export const useSupabase = () => {

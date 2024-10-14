@@ -2,17 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { SupabaseProvider, useSupabase } from "./auth-context";
+import { supabase } from "@/lib/supabase/supabaseClient";
 
 export default function HomePage() {
   const router = useRouter();
-  const supabase = useSupabase();
-  console.dir(supabase);
+  const data = useSupabase();
 
   // ログアウト関数
-  const handleLogout = async () => {
-    await fetch("/api/logout", { method: "POST" });
+  async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      throw `supabase something went wrong ${error.message}`;
+    }
     router.push("/login");
-  };
+  }
 
   const handleMoveProtected = () => {
     router.push("/protected");
@@ -22,8 +25,8 @@ export default function HomePage() {
     <SupabaseProvider>
       <div>
         <h1>ホームページ</h1>
-        <p>{supabase.data.user?.email}</p>
-        <button onClick={handleLogout}>ログアウト</button>
+        <p>{data.user?.email}</p>
+        <button onClick={signOut}>ログアウト</button>
         <button onClick={handleMoveProtected}>プロテクテッド</button>
       </div>
     </SupabaseProvider>
