@@ -22,13 +22,11 @@ export default function HomePage() {
   };
 
   return (
-    <SupabaseProvider>
-      <div>
-        <h1>ホームページ</h1>
-        <p>{data.user?.email}</p>
-        <button onClick={signOut}>ログアウト</button>
-        <button onClick={handleMoveProtected}>プロテクテッド</button>
-      </div>
-    </SupabaseProvider>
+    <div>
+      <h1>ホームページ</h1>
+      <p>{data.user?.email}</p>
+      <button onClick={signOut}>ログアウト</button>
+      <button onClick={handleMoveProtected}>プロテクテッド</button>
+    </div>
   );
 }

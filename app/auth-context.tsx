@@ -7,41 +7,40 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/supabaseClient";
 
 interface SupabaseContext {
-  user: User | null;
+	user: User | null;
 }
 
 const Context = createContext<SupabaseContext | undefined>(undefined);
 
 export const SupabaseProvider = ({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
+	const [user, setUser] = useState<User | null>(null);
+	const router = useRouter();
 
-  console.log(user);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
-        router.push("/login");
-      } else {
-        setUser(data.user);
-      }
-    };
+	useEffect(() => {
+		const getUser = async () => {
+			const { data, error } = await supabase.auth.getUser();
+			if (error || !data?.user) {
+				router.push("/login");
+			} else {
+				setUser(data.user);
+			}
+		};
 
-    getUser();
-  }, [router]);
+		getUser();
+	}, [router]);
 
-  return <Context.Provider value={{ user }}>{children}</Context.Provider>;
+	return <Context.Provider value={{ user }}>{children}</Context.Provider>;
 };
 
 export const useSupabase = () => {
-  const context = useContext(Context);
-  if (context === undefined) {
-    throw new Error("useSupabase must be used within a SupabaseProvider");
-  }
-  return context;
+	const context = useContext(Context);
+	if (context === undefined) {
+		throw new Error("useSupabase must be used within a SupabaseProvider");
+	}
+	return context;
 };
